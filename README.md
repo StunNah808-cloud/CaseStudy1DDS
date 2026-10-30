@@ -30,3 +30,11 @@ BP_CaseStudy1_Competition_Analysis.R – R script supporting the competition pre
 Case1PredictionsPadaAttrition.csv – Employee attrition competition predictions.
 
 Final PowerPoint Presentation – Executive presentation summarizing the analysis, model results, financial evaluation, and recommendations.
+
+Video Presentation
+
+Frito Lay Employee Attrition Case Study – Final Presentation
+
+The recorded Zoom presentation provides an overview of the exploratory data analysis, employee attrition findings, k-Nearest Neighbors and Naive Bayes classification models, financial impact assessment, and final business recommendations.
+
+Watch the Zoom Presentation: https://smu-2u-com.zoom.us/rec/share/0vS0PjHHWRVNZRWdn7yaU2H3MuF4ZegXm83dsDy2GXNnmGfRdlBDkAQMd5TNtWtg.S5iBJKV6CFJTTEFV?from=hub
