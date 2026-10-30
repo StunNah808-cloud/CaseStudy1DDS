@@ -1,0 +1,338 @@
+---
+title: "DDSAnalytics – Frito Lay Employee Attrition Case Study"
+author: "Bronson Pada"
+date: "2026-10-30"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# Load employee dataset for the report
+employee_data <- readRDS("employee_data.rds")
+
+# Confirm dataset dimensions
+stopifnot(nrow(employee_data) == 870)
+```
+
+
+## Introduction
+
+This case study examines employee attrition at Frito Lay
+using data provided by DDSAnalytics.
+
+## Exploratory Data Analysis
+
+The dataset contains 870 employees, including 730 who
+stayed and 140 who left the company.
+
+```{r attrition-summary}
+# Employee attrition summary
+total_employees <- 870
+employees_left <- 140
+employees_stayed <- 730
+
+round(100 * employees_left / total_employees, 2)
+```
+
+## Factors Associated with Employee Attrition
+
+Exploratory data analysis identified three factors
+associated with higher employee attrition:
+job involvement, work-life balance, and overtime.
+
+Employees with low job involvement had an attrition
+rate of 46.81%. Employees with poor work-life balance
+had an attrition rate of 35.42%, and employees who
+worked overtime had an attrition rate of 31.75%.
+
+
+```{r job-involvement}
+
+# Count employees by Job Involvement and Attrition
+table(
+  employee_data$JobInvolvement,
+  employee_data$Attrition
+)
+
+# Calculate attrition percentages
+round(
+  prop.table(
+    table(
+      employee_data$JobInvolvement,
+      employee_data$Attrition
+    ),
+    margin = 1
+  ) * 100,
+  2
+)
+
+```
+## Work-Life Balance and Employee Attrition
+
+The analysis examines how work-life balance is associated
+with employee attrition.
+
+```{r work-life-balance}
+# Count employees by Work-Life Balance and Attrition
+table(
+  employee_data$WorkLifeBalance,
+  employee_data$Attrition
+)
+
+# Calculate attrition percentages
+round(
+  prop.table(
+    table(
+      employee_data$WorkLifeBalance,
+      employee_data$Attrition
+    ),
+    margin = 1
+  ) * 100,
+  2
+)
+```
+
+## Overtime and Employee Attrition
+
+This analysis examines whether employees who work overtime have higher attrition rates than employees who do not work overtime.
+
+```{r overtime-attrition}
+# Count employees by Overtime and Attrition
+table(
+  employee_data$OverTime,
+  employee_data$Attrition
+)
+
+# Calculate attrition percentages
+round(
+  prop.table(
+    table(
+      employee_data$OverTime,
+      employee_data$Attrition
+    ),
+    margin = 1
+  ) * 100,
+  2
+)
+```
+
+## Classification Model Comparison
+
+Two classification models, k-Nearest Neighbors (k-NN) and Naive Bayes, were evaluated to predict employee attrition.
+
+The models were compared using accuracy, sensitivity, and specificity on a test dataset containing 261 employees.
+
+The adjusted Naive Bayes model achieved 74.33% accuracy, 69.05% sensitivity, and 75.34% specificity.
+
+The adjusted k-NN model achieved 48.66% accuracy, 85.71% sensitivity, and 41.55% specificity.
+
+Naive Bayes provided better overall accuracy and specificity, while k-NN identified a higher percentage of employees who actually left.
+
+```{r model-comparison}
+# Model comparison using held-out test results
+
+model_comparison <- data.frame(
+  Model = c("k-NN", "Naive Bayes"),
+  Accuracy = c(48.66, 74.33),
+  Sensitivity = c(85.71, 69.05),
+  Specificity = c(41.55, 75.34)
+)
+
+# Display comparison table
+knitr::kable(
+  model_comparison,
+  caption = "Classification Model Performance (%)"
+)
+
+# Generate comparison chart
+comparison_matrix <- t(
+  as.matrix(model_comparison[, 2:4])
+)
+
+colnames(comparison_matrix) <- model_comparison$Model
+
+barplot(
+  comparison_matrix,
+  beside = TRUE,
+  col = c("steelblue", "tomato", "darkseagreen3"),
+  ylim = c(0, 100),
+  main = "k-NN vs Naive Bayes: Test Performance",
+  ylab = "Performance (%)",
+  legend.text = rownames(comparison_matrix),
+  args.legend = list(x = "topright", bty = "n")
+)
+
+abline(h = 60, col = "red", lty = 2, lwd = 2)
+```
+
+## Confusion Matrices: Predicted vs. Actual Attrition
+
+Confusion matrices were used to evaluate how accurately the k-NN and Naive Bayes models classified employee attrition.
+
+The test dataset contained 261 employees, including 219 employees who stayed and 42 employees who left.
+
+The adjusted k-NN model used a 10% probability threshold, while the adjusted Naive Bayes model used a 20% probability threshold.
+
+```{r}
+# Confusion matrices from held-out test results
+# Rows = Predicted, Columns = Actual
+
+knn_matrix <- matrix(
+  c(91, 128, 6, 36),
+  nrow = 2,
+  dimnames = list(
+    Predicted = c("Stayed", "Left"),
+    Actual = c("Stayed", "Left")
+  )
+)
+
+nb_matrix <- matrix(
+  c(165, 54, 13, 29),
+  nrow = 2,
+  dimnames = list(
+    Predicted = c("Stayed", "Left"),
+    Actual = c("Stayed", "Left")
+  )
+)
+
+# Display k-NN confusion matrix
+knitr::kable(
+  knn_matrix,
+  caption = "k-NN Confusion Matrix (10% Threshold)"
+)
+
+# Display Naive Bayes confusion matrix
+knitr::kable(
+  nb_matrix,
+  caption = "Naive Bayes Confusion Matrix (20% Threshold)"
+)
+```
+## Financial Impact of Employee Attrition
+
+Employee attrition creates potential replacement costs for the organization. This analysis estimates replacement costs using the average monthly income of employees who left the company.
+
+The average monthly income of employees who left was approximately $4,764.79, equivalent to an estimated annual salary of $57,177.43.
+
+Replacement costs are evaluated using hypothetical scenarios of 50%, 100%, 200%, and 400% of annual salary.
+
+```{r}
+# Financial Impact: Replacement Cost Scenarios
+
+# Average monthly income of employees who left
+average_monthly_income <- 4764.786
+
+# Estimate annual salary
+annual_salary <- average_monthly_income * 12
+
+# Replacement cost scenarios
+replacement_rates <- c(0.50, 1.00, 2.00, 4.00)
+
+replacement_costs <- annual_salary * replacement_rates
+
+# Create comparison table
+replacement_table <- data.frame(
+  Replacement_Cost = c("50%", "100%", "200%", "400%"),
+  Cost_Per_Employee = round(replacement_costs, 2)
+)
+
+# Display results
+knitr::kable(
+  replacement_table,
+  caption = "Estimated Employee Replacement Costs"
+)
+``` 
+
+
+## Retention Program Break-Even and Potential Savings
+
+This analysis estimates how many employee departures must be prevented to recover the cost of a proposed retention program.
+
+```{r}
+# Retention program investment
+total_employees <- 870
+program_cost_per_employee <- 200
+total_program_cost <- total_employees * program_cost_per_employee
+
+# Calculate break-even departures
+break_even_departures <- ceiling(
+  total_program_cost / replacement_costs
+)
+
+# Calculate potential net savings
+net_savings <- (break_even_departures * replacement_costs) -
+  total_program_cost
+
+# Create break-even table
+break_even_table <- data.frame(
+  Replacement_Scenario = c("50%", "100%", "200%", "400%"),
+  Break_Even_Departures = break_even_departures,
+  Potential_Net_Savings = round(net_savings, 2)
+)
+
+# Display results
+knitr::kable(
+  break_even_table,
+  caption = "Retention Program Break-Even and Potential Net Savings"
+)
+``` 
+
+
+## Conclusions and Recommendations
+
+### Key Findings
+
+The analysis examined employee attrition among 870 employees. Of these employees, 140 left the company and 730 stayed, resulting in an overall attrition rate of 16.09%.
+
+Three employee characteristics were associated with higher attrition:
+
+- Employees with low job involvement (rating 1) had an attrition rate of 46.81%.
+- Employees with poor work-life balance (rating 1) had an attrition rate of 35.42%.
+- Employees who worked overtime had an attrition rate of 31.75%.
+
+These findings suggest that employee engagement, work-life balance, and overtime should be priorities for further investigation.
+
+### Classification Model Results
+
+Two classification models were evaluated using a test dataset of 261 employees.
+
+The adjusted Naive Bayes model achieved 74.33% accuracy, 69.05% sensitivity, and 75.34% specificity.
+
+The adjusted k-Nearest Neighbors (k-NN) model achieved 48.66% accuracy, 85.71% sensitivity, and 41.55% specificity.
+
+Naive Bayes provided better overall accuracy and specificity, while k-NN identified a greater percentage of employees who actually left.
+
+Both models had lower overall accuracy than predicting that every employee would stay (83.91%). However, that simple approach would fail to identify any employees who left.
+
+### Financial Impact
+
+The estimated annual salary of employees who left was approximately $57,177.43.
+
+Employee replacement costs were evaluated using hypothetical scenarios ranging from 50% to 400% of annual salary.
+
+A proposed retention program costing $200 per employee would require a total investment of $174,000.
+
+Under the 50% replacement-cost scenario, preventing seven employee departures would recover the program investment and generate approximately $26,121 in potential net savings.
+
+These savings are hypothetical and depend on the retention program actually preventing employee departures.
+
+### Recommendations
+
+1. Investigate low job involvement and identify opportunities to improve employee engagement.
+
+2. Review employee workloads and work-life balance to identify potential retention improvements.
+
+3. Evaluate overtime practices, particularly among employees experiencing consistently high workloads.
+
+4. Consider using Naive Bayes as a balanced screening model and k-NN when identifying more potential leavers is the priority, while accounting for false-positive predictions.
+
+5. Implement a small employee retention pilot program and measure its effectiveness before expanding the investment.
+
+### Final Conclusion
+
+Employee attrition represents a potential financial and operational challenge for the organization.
+
+The analysis identified employee groups associated with elevated attrition and demonstrated how classification models can support retention planning.
+
+Combining employee engagement initiatives, predictive analytics, and financial evaluation may help the organization make more informed employee retention decisions.
