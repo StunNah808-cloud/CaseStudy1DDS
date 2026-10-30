@@ -39,6 +39,6 @@ This recorded presentation provides an overview of the employee attrition analys
 
 Watch the Final Zoom Presentation:
 
-Click Here to Watch the Recorded Presentation
+Click Here to Watch the Recorded Presentation: https://smu-2u-com.zoom.us/rec/share/0vS0PjHHWRVNZRWdn7yaU2H3MuF4ZegXm83dsDy2GXNnmGfRdlBDkAQMd5TNtWtg.S5iBJKV6CFJTTEFV?from=hub
 
 
