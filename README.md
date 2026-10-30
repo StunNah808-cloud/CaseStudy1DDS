@@ -14,3 +14,19 @@ Two classification models, k-Nearest Neighbors (k-NN) and Naive Bayes, were eval
 The financial analysis estimated employee replacement costs ranging from 50% to 400% of annual salary. Using an illustrative $200 retention incentive per employee, the analysis demonstrated how preventing employee departures could potentially offset retention program costs.
 
 Overall, the findings suggest that Frito Lay should focus retention efforts on employees with low job involvement, poor work-life balance, and overtime responsibilities. The Naive Bayes classification model provides a method for identifying employees who may be at greater risk of leaving, while additional evaluation would be needed to determine actual financial savings.
+
+Project Files
+
+The repository contains the completed Frito Lay Employee Attrition Case Study, including:
+
+BP_CaseStudy1_DDSAnalytics.Rmd – R Markdown source file containing the statistical analysis, predictive modeling, and financial evaluation.
+
+BP_CaseStudy1_DDSAnalytics.html – Completed HTML report generated from RStudio.
+
+BP_DDSAnalytics_CaseStudy_P1.R – R script supporting the case study analysis.
+
+BP_CaseStudy1_Competition_Analysis.R – R script supporting the competition predictions.
+
+Case1PredictionsPadaAttrition.csv – Employee attrition competition predictions.
+
+Final PowerPoint Presentation – Executive presentation summarizing the analysis, model results, financial evaluation, and recommendations.
